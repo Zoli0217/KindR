@@ -4,13 +4,13 @@ import Profil_maker from "./Pages/Profil_maker"
 import { Routes, Route, Navigate } from "react-router-dom";
 
 function App() {
-  
   return (
     <Routes>
       {/* default to login */}
       <Route path="/" element={<Navigate to="/login" replace />} />
+    <Routes>
+      <Route path="/" element={<SwipeCards />} />
       <Route path="/login" element={<Login />} />
-      <Route path="/profile-maker" element={<Profil_maker />} />
     </Routes>
   )
 }
