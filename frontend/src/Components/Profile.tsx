@@ -17,6 +17,22 @@ export default function Profile({ nextStep, prevStep, handleChange, formData }: 
       <h2>Profil adatok</h2>
 
       <input
+        type="email"
+        name="email"
+        placeholder="E-mail cím"
+        value={formData.email}
+        onChange={handleChange}
+      />
+
+      <input
+        type="password"
+        name="password"
+        placeholder="Jelszó"
+        value={formData.password}
+        onChange={handleChange}
+      />
+
+      <input
         type="number"
         name="age"
         placeholder="Életkor"

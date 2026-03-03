@@ -1,10 +1,13 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Profile from "../components/Profile";
 import Preferences from "../components/Preferences";
 import Review from "../components/Review";
 import api from "../api"
 
 export interface FormData {
+  email: string;
+  password: string;
   age: string;
   gender: string;
   bio: string;
@@ -17,8 +20,11 @@ export interface FormData {
 
 export default function Profil_maker() {
   const [step, setStep] = useState<number>(1);
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState<FormData>({
+    email: "",
+    password: "",
     age: "",
     gender: "",
     bio: "",
@@ -48,6 +54,7 @@ export default function Profil_maker() {
     console.log("Siker:", response.data);
 
     alert("Sikeres regisztráció!");
+    navigate("/login");
   } catch (error: any) {
     if (error.response) {
       console.log("Backend hiba:", error.response.data);
