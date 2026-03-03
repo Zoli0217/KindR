@@ -2,6 +2,7 @@ import { useState } from "react";
 import Profile from "../Components/Profile";
 import Preferences from "../Components/Preferences";
 import Review from "../Components/Review";
+import api from "../api"
 
 export interface FormData {
   email: string;
@@ -45,20 +46,21 @@ export default function Profil_maker() {
   };
 
   const handleSubmit = async (): Promise<void> => {
-    try {
-      const response = await fetch("http://localhost:8000/register/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData)
-      });
+  try {
+    const response = await api.post("register/", formData);
 
-      if (!response.ok) throw new Error("Hiba történt");
+    console.log("Siker:", response.data);
 
-      alert("Sikeres regisztráció!");
-    } catch (err) {
-      console.error(err);
+    alert("Sikeres regisztráció!");
+  } catch (error: any) {
+    if (error.response) {
+      console.log("Backend hiba:", error.response.data);
+      alert(JSON.stringify(error.response.data));
+    } else {
+      console.log("Network hiba:", error.message);
     }
-  };
+  }
+};
 
   switch (step) {
     case 1:
