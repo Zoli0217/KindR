@@ -5,8 +5,6 @@ import Review from "../components/Review";
 import api from "../api"
 
 export interface FormData {
-  email: string;
-  password: string;
   age: string;
   gender: string;
   bio: string;
@@ -21,8 +19,6 @@ export default function Profil_maker() {
   const [step, setStep] = useState<number>(1);
 
   const [formData, setFormData] = useState<FormData>({
-    email: "",
-    password: "",
     age: "",
     gender: "",
     bio: "",
