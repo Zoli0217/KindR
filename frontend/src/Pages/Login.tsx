@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
 
 function Login() {
   const [form, setForm] = useState({ username: "", password: "" });
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -22,7 +24,7 @@ function Login() {
       localStorage.setItem("accessToken", access);
       localStorage.setItem("refreshToken", refresh);
 
-      navigate("/");
+      alert("Sikeres bejelentkezés!");
     } catch (err) {
       console.error(err);
       alert("Hibás felhasználónév vagy jelszó");
