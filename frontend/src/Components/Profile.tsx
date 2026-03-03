@@ -11,43 +11,108 @@ interface Props {
   handleChange: (e: InputEvent) => void;
   formData: FormData;
 }
-export default function Profile({ nextStep, prevStep, handleChange, formData }: Props) {
+
+export default function Profile({ nextStep, handleChange, formData }: Props) {
   return (
-    <div>
-      <h2>Profil adatok</h2>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-rose-50 to-pink-100 px-4">
+      <div className="w-full max-w-md">
+        {/* Progress */}
+        <div className="flex items-center justify-center gap-2 mb-6">
+          <div className="w-10 h-1.5 rounded-full bg-rose-500" />
+          <div className="w-10 h-1.5 rounded-full bg-gray-200" />
+          <div className="w-10 h-1.5 rounded-full bg-gray-200" />
+        </div>
 
-      <input
-        type="number"
-        name="age"
-        placeholder="Életkor"
-        value={formData.age}
-        onChange={handleChange}
-      />
+        <div className="bg-white rounded-2xl shadow-xl p-8">
+          <h2 className="text-2xl font-bold text-gray-800 mb-1 text-center">Profil adatok</h2>
+          <p className="text-gray-400 text-sm text-center mb-6">Mesélj magadról egy kicsit</p>
 
-      <select name="gender" value={formData.gender} onChange={handleChange}>
-        <option value="">Nem</option>
-        <option value="male">Férfi</option>
-        <option value="female">Nő</option>
-        <option value="other">Egyéb</option>
-      </select>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-1">Email</label>
+              <input
+                type="email"
+                name="email"
+                placeholder="pelda@email.com"
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-rose-400 focus:border-transparent transition"
+              />
+            </div>
 
-      <input
-        type="text"
-        name="city"
-        placeholder="Város"
-        value={formData.city}
-        onChange={handleChange}
-      />
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-1">Jelszó</label>
+              <input
+                type="password"
+                name="password"
+                placeholder="••••••••"
+                value={formData.password}
+                onChange={handleChange}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-rose-400 focus:border-transparent transition"
+              />
+            </div>
 
-      <textarea
-        name="bio"
-        placeholder="Írj magadról..."
-        value={formData.bio}
-        onChange={handleChange}
-      />
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-600 mb-1">Életkor</label>
+                <input
+                  type="number"
+                  name="age"
+                  placeholder="25"
+                  value={formData.age}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-rose-400 focus:border-transparent transition"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-600 mb-1">Nem</label>
+                <select
+                  name="gender"
+                  value={formData.gender}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-rose-400 focus:border-transparent transition appearance-none"
+                >
+                  <option value="">Válassz</option>
+                  <option value="male">Férfi</option>
+                  <option value="female">Nő</option>
+                  <option value="other">Egyéb</option>
+                </select>
+              </div>
+            </div>
 
-      <button onClick={prevStep}>Vissza</button>
-      <button onClick={nextStep}>Tovább</button>
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-1">Város</label>
+              <input
+                type="text"
+                name="city"
+                placeholder="Budapest"
+                value={formData.city}
+                onChange={handleChange}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-rose-400 focus:border-transparent transition"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-1">Bemutatkozás</label>
+              <textarea
+                name="bio"
+                placeholder="Írj magadról pár sort..."
+                value={formData.bio}
+                onChange={handleChange}
+                rows={3}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-rose-400 focus:border-transparent transition resize-none"
+              />
+            </div>
+
+            <button
+              onClick={nextStep}
+              className="w-full py-3 bg-gradient-to-r from-rose-500 to-pink-500 text-white font-semibold rounded-xl shadow-lg hover:from-rose-600 hover:to-pink-600 active:scale-[0.98] transition mt-2"
+            >
+              Tovább →
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
