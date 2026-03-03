@@ -1,0 +1,50 @@
+# =========================
+# GENERAL
+# =========================
+.DS_Store
+Thumbs.db
+*.log
+*.swp
+*.swo
+
+# =========================
+# PYTHON / DJANGO
+# =========================
+backend/venv/
+backend/__pycache__/
+backend/*.pyc
+backend/db.sqlite3
+backend/media/
+backend/staticfiles/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Environment variables
+backend/.env
+.env
+
+# =========================
+# DJANGO MIGRATIONS (OPTIONAL)
+# =========================
+# Ha csapatmunka van, NE ignore-old
+# backend/*/migrations/*.py
+# backend/*/migrations/*.pyc
+
+# =========================
+# NODE / REACT / VITE
+# =========================
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Local env files
+frontend/.env
+frontend/.env.local
+
+# =========================
+# IDE
+# =========================
+.vscode/
+.idea/
