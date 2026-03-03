@@ -1,8 +1,10 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
 
 function Login() {
   const [form, setForm] = useState({ username: "", password: "" });
+  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -19,6 +21,8 @@ function Login() {
       localStorage.setItem("refreshToken", refresh);
 
       alert("Sikeres bejelentkezés!");
+      // redirect to profile maker
+      navigate("/profile-maker");
     } catch (err) {
       console.error(err);
       alert("Hibás felhasználónév vagy jelszó");

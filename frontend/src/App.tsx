@@ -1,19 +1,17 @@
 import './App.css'
-import SwipeCards from './components/SwipeCards'
 import Login from "./Pages/Login";
 import Profil_maker from "./Pages/Profil_maker"
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 function App() {
   
   return (
-    <>
-      <SwipeCards />
-      <Profil_maker/>
-      <Routes>
+    <Routes>
+      {/* default to login */}
+      <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/profile-maker" element={<Profil_maker />} />
     </Routes>
-    </>
   )
 }
 
