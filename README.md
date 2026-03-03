@@ -1,0 +1,2 @@
+# KindR
+Ismerkedős app fiataloknak
