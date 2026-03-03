@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { logout } from '../api/axios';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -409,18 +410,21 @@ const SwipeCards: React.FC = () => {
       {/* ---- top bar ---- */}
       <header className="shrink-0 flex items-center justify-between px-6 py-4 bg-white shadow-sm z-30">
         <button className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-100 transition-all duration-300">
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16"/>
           </svg>
         </button>
 
         <KindRLogo />
 
-        <button className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-100 transition-all duration-300 relative">
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+        <button 
+          onClick={logout}
+          className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-rose-100 transition-all duration-300"
+          title="Kijelentkezés"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-gray-600 hover:text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
           </svg>
-          <span className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 rounded-full text-[10px] text-white flex items-center justify-center font-bold">3</span>
         </button>
       </header>
 

@@ -1,16 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Profile from "../components/Profile";
-import Preferences from "../components/Preferences";
-import Review from "../components/Review";
-import api from "../api"
+import Profile from "../Components/Profile";
+import Preferences from "../Components/Preferences";
+import Review from "../Components/Review";
+import api from "../api/axios"
 
 export interface FormData {
-  email: string;
-  password: string;
   age: string;
   gender: string;
   bio: string;
+  avatar_url: string;
   city: string;
   preferred_gender: string;
   min_age: string;
@@ -23,11 +22,10 @@ export default function Profil_maker() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState<FormData>({
-    email: "",
-    password: "",
     age: "",
     gender: "",
     bio: "",
+    avatar_url: "",
     city: "",
     preferred_gender: "",
     min_age: "",
@@ -48,22 +46,26 @@ export default function Profil_maker() {
   };
 
   const handleSubmit = async (): Promise<void> => {
-  try {
-    const response = await api.post("register/", formData);
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await api.put("profile/", formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    console.log("Siker:", response.data);
-
-    alert("Sikeres regisztráció!");
-    navigate("/login");
-  } catch (error: any) {
-    if (error.response) {
-      console.log("Backend hiba:", error.response.data);
-      alert(JSON.stringify(error.response.data));
-    } else {
-      console.log("Network hiba:", error.message);
+      console.log("Profil frissítve:", response.data);
+      alert("Sikeres profil frissítés!");
+      navigate("/swipe");
+    } catch (error: any) {
+      if (error.response) {
+        console.log("Backend hiba:", error.response.data);
+        alert(JSON.stringify(error.response.data));
+      } else {
+        console.log("Network hiba:", error.message);
+      }
     }
-  }
-};
+  };
 
   switch (step) {
     case 1:

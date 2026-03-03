@@ -23,55 +23,10 @@ export default function Profile({ nextStep, handleChange, formData }: Props) {
           <div className="w-10 h-1.5 rounded-full bg-gray-200" />
         </div>
 
-      <input
-        type="email"
-        name="email"
-        placeholder="E-mail cím"
-        value={formData.email}
-        onChange={handleChange}
-      />
-
-      <input
-        type="password"
-        name="password"
-        placeholder="Jelszó"
-        value={formData.password}
-        onChange={handleChange}
-      />
-
-      <input
-        type="number"
-        name="age"
-        placeholder="Életkor"
-        value={formData.age}
-        onChange={handleChange}
-      />
+        <div className="bg-white rounded-2xl shadow-xl p-8">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">Személyes adatok</h2>
 
           <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">Email</label>
-              <input
-                type="email"
-                name="email"
-                placeholder="pelda@email.com"
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-rose-400 focus:border-transparent transition"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">Jelszó</label>
-              <input
-                type="password"
-                name="password"
-                placeholder="••••••••"
-                value={formData.password}
-                onChange={handleChange}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-rose-400 focus:border-transparent transition"
-              />
-            </div>
-
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block text-sm font-medium text-gray-600 mb-1">Életkor</label>
@@ -133,6 +88,6 @@ export default function Profile({ nextStep, handleChange, formData }: Props) {
           </div>
         </div>
       </div>
- 
+    </div>
   );
 }

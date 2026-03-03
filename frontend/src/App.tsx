@@ -1,18 +1,77 @@
-import './App.css'
+import { useState, useEffect } from 'react';
+import SwipeCards from './Components/SwipeCards';
 import Login from "./Pages/Login";
 import Profil_maker from "./Pages/Profil_maker"
 import { Routes, Route, Navigate } from "react-router-dom";
+import Logout from "./Pages/Logout";
+import api from "./api/axios";
+
+// Protected route component - checks if user is logged in
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const token = localStorage.getItem("accessToken");
+  return token ? <>{children}</> : <Navigate to="/login" replace />;
+}
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [profileCompleted, setProfileCompleted] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      const token = localStorage.getItem("accessToken");
+      
+      if (!token) {
+        setIsAuthenticated(false);
+        setProfileCompleted(false);
+        setLoading(false);
+        return;
+      }
+
+      setIsAuthenticated(true);
+      try {
+        const response = await api.get("profile/", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setProfileCompleted(response.data.is_completed || false);
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+        setProfileCompleted(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAuthStatus();
+  }, []);
+
+  if (loading) {
+    return <div className="flex items-center justify-center min-h-screen">Betöltés...</div>;
+  }
+
   return (
     <Routes>
-      {/* default to login */}
-      <Route path="/" element={<Navigate to="/login" replace />} />
-    <Routes>
-      <Route path="/" element={<SwipeCards />} />
-      <Route path="/login" element={<Login />} />
+      <Route 
+        path="/login" 
+        element={!isAuthenticated ? <Login /> : <Navigate to={profileCompleted ? "/swipe" : "/profile-maker"} replace />} 
+      />
+      <Route 
+        path="/profile-maker" 
+        element={<ProtectedRoute><Profil_maker /></ProtectedRoute>} 
+      />
+      <Route 
+        path="/swipe" 
+        element={<ProtectedRoute><SwipeCards /></ProtectedRoute>} 
+      />
+      <Route 
+        path="/" 
+        element={<Navigate to={isAuthenticated ? (profileCompleted ? "/swipe" : "/profile-maker") : "/login"} replace />} 
+      />
+      <Route path="/logout" element={<Logout />} />
     </Routes>
-  )
+  );
 }
 
 export default App
