@@ -10,8 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+<<<<<<< HEAD
     "@react-spring/web": "^9.5.5",
     "@tailwindcss/vite": "^4.2.1",
+=======
+    "axios": "^1.13.6",
+>>>>>>> 36a35a49d760a424e6d54b07b3e19a170847bb10
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-tinder-card": "^1.6.4",
