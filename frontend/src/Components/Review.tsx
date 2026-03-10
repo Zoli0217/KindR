@@ -6,15 +6,18 @@ interface Props {
   handleSubmit: () => Promise<void>;
 }
 
+const labelMap: Record<keyof FormData, string> = {
+  életkor: "Életkor",
+  nem: "Nem",
 const labelMap: Record<string, string> = {
   age: "Életkor",
   gender: "Nem",
   bio: "Bemutatkozás",
-  city: "Város",
-  preferred_gender: "Preferált nem",
-  min_age: "Min. életkor",
-  max_age: "Max. életkor",
-  relationship_type: "Kapcsolat típusa",
+  város: "Város",
+  keresett_nem: "Preferált nem",
+  min_életkor: "Min. életkor",
+  max_életkor: "Max. életkor",
+  kapcsolat_típusa: "Kapcsolat típusa",
 };
 
 const genderLabels: Record<string, string> = {
@@ -72,36 +75,16 @@ export default function Review({ prevStep, formData, handleSubmit }: Props) {
           </div>
         </div>
 
-        {/* Card */}
-        <div className="bg-slate-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-slate-800/50 p-8 md:p-10">
-          {/* Header */}
-          <div className="mb-8">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-                <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div>
-                <h2 className="text-2xl font-bold text-white">Ellenőrzés</h2>
-                <p className="text-slate-400 text-sm">Nézd át az adataidat</p>
-              </div>
-            </div>
-          </div>
+        <div className="bg-white rounded-2xl shadow-xl p-8">
+          <h2 className="text-2xl font-bold text-gray-800 mb-1 text-center">Ellenőrzés</h2>
+          <p className="text-gray-400 text-sm text-center mb-6">Nézd át az adataidat mielőtt regisztrálsz</p>
 
-          {/* Data display */}
-          <div className="space-y-3 mb-8">
-            {displayKeys.map((key) => (
-              <div 
-                key={key} 
-                className="flex justify-between items-start p-4 rounded-xl bg-slate-800/40 border border-slate-700/30 hover:border-slate-600/50 transition-all duration-300"
-              >
-                <span className="text-sm font-medium text-slate-400 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-                  {labelMap[key] || key}
-                </span>
-                <span className="text-sm text-white text-right max-w-[60%] break-words font-medium">
-                  {formatValue(key, formData[key as keyof FormData])}
+          <div className="space-y-3">
+            {(Object.keys(formData) as (keyof FormData)[]).map((key) => (
+              <div key={key} className="flex justify-between items-start py-2 border-b border-gray-100 last:border-0">
+                <span className="text-sm font-medium text-gray-500">{labelMap[key]}</span>
+                <span className="text-sm text-gray-800 text-right max-w-[60%] break-words">
+                  {key === "password" ? "••••••••" : formData[key] || "—"}
                 </span>
               </div>
             ))}

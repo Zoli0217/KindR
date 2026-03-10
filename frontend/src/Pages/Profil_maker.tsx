@@ -6,15 +6,14 @@ import Review from "../components/Review";
 import api from "../api/axios"
 
 export interface FormData {
-  age: string;
-  gender: string;
+  életkor: string;
+  nem: string;
   bio: string;
-  avatar_url: string;
-  city: string;
-  preferred_gender: string;
-  min_age: string;
-  max_age: string;
-  relationship_type: string;
+  város: string;
+  keresett_nem: string;
+  min_életkor: string;
+  max_életkor: string;
+  kapcsolat_típusa: string;
 }
 
 export default function Profil_maker() {
@@ -22,15 +21,14 @@ export default function Profil_maker() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState<FormData>({
-    age: "",
-    gender: "",
+    életkor: "",
+    nem: "",
     bio: "",
-    avatar_url: "",
-    city: "",
-    preferred_gender: "",
-    min_age: "",
-    max_age: "",
-    relationship_type: ""
+    város: "",
+    keresett_nem: "",
+    min_életkor: "",
+    max_életkor: "",
+    kapcsolat_típusa: ""
   });
 
   const nextStep = (): void => setStep(prev => prev + 1);

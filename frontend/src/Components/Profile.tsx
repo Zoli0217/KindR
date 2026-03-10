@@ -76,9 +76,9 @@ export default function Profile({ nextStep, handleChange, formData }: Props) {
                 </label>
                 <input
                   type="number"
-                  name="age"
+                  name="életkor"
                   placeholder="25"
-                  value={formData.age}
+                  value={formData.életkor}
                   onChange={handleChange}
                   className="w-full px-5 py-4 rounded-xl bg-slate-800/50 border border-slate-700/50 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400/50 transition-all duration-300 hover:border-slate-600"
                 />
@@ -93,11 +93,15 @@ export default function Profile({ nextStep, handleChange, formData }: Props) {
                   </span>
                 </label>
                 <select
-                  name="gender"
-                  value={formData.gender}
+                  name="nem"
+                  value={formData.nem}
                   onChange={handleChange}
                   className="w-full px-5 py-4 rounded-xl bg-slate-800/50 border border-slate-700/50 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400/50 transition-all duration-300 hover:border-slate-600 appearance-none cursor-pointer"
                 >
+                  <option value="">Válassz</option>
+                  <option value="férfi">Férfi</option>
+                  <option value="nő">Nő</option>
+                  <option value="egyéb">Egyéb</option>
                   <option value="" className="bg-slate-800">Válassz</option>
                   <option value="male" className="bg-slate-800">Férfi</option>
                   <option value="female" className="bg-slate-800">Nő</option>
@@ -119,9 +123,9 @@ export default function Profile({ nextStep, handleChange, formData }: Props) {
               </label>
               <input
                 type="text"
-                name="city"
+                name="város"
                 placeholder="Budapest"
-                value={formData.city}
+                value={formData.város}
                 onChange={handleChange}
                 className="w-full px-5 py-4 rounded-xl bg-slate-800/50 border border-slate-700/50 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400/50 transition-all duration-300 hover:border-slate-600"
               />
