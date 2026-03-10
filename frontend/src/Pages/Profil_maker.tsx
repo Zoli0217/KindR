@@ -64,6 +64,8 @@ export default function Profil_maker() {
       });
 
       console.log("Profil frissítve:", response.data);
+      // Mentjük a preferált nemet localStorage-ba a SwipeCards számára
+      localStorage.setItem("kindR_preferred_gender", formData.keresett_nem || '');
       alert("Sikeres profil frissítés!");
       navigate("/swipe");
     } catch (error: any) {

@@ -1,6 +1,29 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { logout } from '../api/axios';
 import api from '../api/axios';
+
+/* ---- helpers ---- */
+const saveMatch = (user: { id: number; name: string; age: number; image: string; bio: string } | null | undefined) => {
+  if (!user || !user.id) return;
+  try {
+    const raw = localStorage.getItem('kindR_matches') || '[]';
+    const parsed = JSON.parse(raw);
+    const existing: typeof user[] = Array.isArray(parsed)
+      ? parsed.filter((u: unknown) => u != null && typeof u === 'object' && 'id' in (u as Record<string, unknown>))
+      : [];
+    if (!existing.find((u) => u.id === user.id)) {
+      existing.unshift(user);
+    }
+    localStorage.setItem('kindR_matches', JSON.stringify(existing));
+  } catch { /* ignore */ }
+};
+
+const getMatchCount = (): number => {
+  try {
+    return JSON.parse(localStorage.getItem('kindR_matches') || '[]').length;
+  } catch { return 0; }
+};
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -193,6 +216,7 @@ const SwipeIndicator: React.FC<SwipeIndicatorProps> = ({ offsetX, offsetY, isSup
 /*  Main component                                                     */
 /* ------------------------------------------------------------------ */
 const SwipeCards: React.FC = () => {
+  const navigate = useNavigate();
   const preferredGenderRef = useRef<string>('');
   const [users, setUsers] = useState<User[]>([]);
   const [swipedUsers, setSwipedUsers] = useState<User[]>([]);
@@ -217,13 +241,26 @@ const SwipeCards: React.FC = () => {
 
   // Fetch profile to get preferred gender, then generate initial users
   useEffect(() => {
+    // Először localStorage-ból olvassuk (megbízhatóbb, ha ott van)
+    const cached = localStorage.getItem('kindR_preferred_gender') || '';
+    if (cached) {
+      preferredGenderRef.current = cached;
+      setUsers(generateInitialUsers(5, cached));
+    }
+    // Mindig frissítjük az API-ból is
     api.get('profile/').then((res) => {
-      const pg: string = res.data.preferred_gender || '';
-      preferredGenderRef.current = pg;
-      setUsers(generateInitialUsers(5, pg));
+      const pg: string = (res.data.preferred_gender || '').trim().toLowerCase();
+      // normalize possible stored English values
+      const mapped = pg === 'female' ? 'nő' : pg === 'male' ? 'férfi' : pg;
+      if (mapped) {
+        localStorage.setItem('kindR_preferred_gender', mapped);
+        preferredGenderRef.current = mapped;
+        setUsers(generateInitialUsers(5, mapped));
+      } else if (!cached) {
+        setUsers(generateInitialUsers(5));
+      }
     }).catch(() => {
-      // fallback: generate without filter
-      setUsers(generateInitialUsers(5));
+      if (!cached) setUsers(generateInitialUsers(5));
     });
   }, []);
 
@@ -286,6 +323,7 @@ const SwipeCards: React.FC = () => {
   const swipeCard = (direction: 'left' | 'right' | 'up') => {
     // Save user before removing for rewind
     const swipedUser = users[currentIndex];
+    if (!swipedUser) return; // guard: no card to swipe
     setSwipedUsers(prev => [...prev, swipedUser]);
     
     // animate card flying off-screen
@@ -295,24 +333,18 @@ const SwipeCards: React.FC = () => {
       setOffsetY(-800);
       // Show match animation for super-like (higher chance)
       if (Math.random() > 0.3) {
+        saveMatch(swipedUser);
         setMatchedUser(swipedUser);
         setTimeout(() => setShowMatch(true), 300);
-        setTimeout(() => {
-          setShowMatch(false);
-          setMatchedUser(null);
-        }, 3000);
       }
     } else {
       setOffsetX(direction === 'right' ? 600 : -600);
       setOffsetY(-80);
       // Random match on like
       if (direction === 'right' && Math.random() > 0.5) {
+        saveMatch(swipedUser);
         setMatchedUser(swipedUser);
         setTimeout(() => setShowMatch(true), 300);
-        setTimeout(() => {
-          setShowMatch(false);
-          setMatchedUser(null);
-        }, 3000);
       }
     }
 
@@ -408,11 +440,12 @@ const SwipeCards: React.FC = () => {
               <button 
                 onClick={() => {
                   setShowMatch(false);
+                  if (matchedUser) navigate(`/chat/${matchedUser.id}`);
                   setMatchedUser(null);
                 }}
                 className="px-10 py-4 bg-white text-rose-600 font-bold rounded-full shadow-lg hover:scale-105 transition-transform"
               >
-                Üzenet küldése
+                Üzenet küldése 💬
               </button>
               <button 
                 onClick={() => {
@@ -442,10 +475,19 @@ const SwipeCards: React.FC = () => {
 
       {/* ---- top bar ---- */}
       <header className="shrink-0 flex items-center justify-between px-8 py-5 bg-white shadow-sm z-30">
-        <button className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-100 transition-all duration-300">
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16"/>
+        <button
+          onClick={() => navigate('/chat')}
+          className="relative w-10 h-10 rounded-full flex items-center justify-center hover:bg-rose-50 transition-all duration-300"
+          title="Üzenetek"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
           </svg>
+          {getMatchCount() > 0 && (
+            <span className="absolute -top-1 -right-1 w-5 h-5 bg-rose-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+              {getMatchCount() > 9 ? '9+' : getMatchCount()}
+            </span>
+          )}
         </button>
 
         <KindRLogo />

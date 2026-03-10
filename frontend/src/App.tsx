@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import SwipeCards from './Components/SwipeCards';
 import Login from "./Pages/Login";
-import Profil_maker from "./Pages/Profil_maker"
+import Profil_maker from "./Pages/Profil_maker";
+import Chat from "./Pages/Chat";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Logout from "./Pages/Logout";
 import api from "./api/axios";
@@ -70,6 +71,8 @@ function App() {
         element={<Navigate to={isAuthenticated ? (profileCompleted ? "/swipe" : "/profile-maker") : "/login"} replace />} 
       />
       <Route path="/logout" element={<Logout />} />
+      <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
+      <Route path="/chat/:userId" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
     </Routes>
   );
 }
