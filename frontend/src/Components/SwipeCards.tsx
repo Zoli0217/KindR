@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { logout } from '../api/axios';
+import api from '../api/axios';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -40,44 +41,63 @@ const BIOS = [
 
 const INTERESTS = ['🎵 Zene', '📚 Könyvek', '🎮 Gaming', '✈️ Utazás', '🍕 Főzés', '💪 Fitness', '🎬 Filmek', '📷 Fotózás', '🎨 Művészet', '🐕 Állatok', '☕ Kávé', '🌿 Természet', '⚽ Sport', '🎸 Hangszerek', '🧘 Jóga'];
 
-// Profi Unsplash képek - modellek/portrék
-const PROFILE_IMAGES = [
+// Profi Unsplash képek - NŐI portrék
+const FEMALE_IMAGES = [
   'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=600&fit=crop&crop=face',
-  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=600&fit=crop&crop=face',
   'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&h=600&fit=crop&crop=face',
-  'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=600&fit=crop&crop=face',
   'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=600&fit=crop&crop=face',
   'https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=400&h=600&fit=crop&crop=face',
   'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=600&fit=crop&crop=face',
-  'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=600&fit=crop&crop=face',
   'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&h=600&fit=crop&crop=face',
-  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=600&fit=crop&crop=face',
   'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=600&fit=crop&crop=face',
-  'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=400&h=600&fit=crop&crop=face',
   'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&h=600&fit=crop&crop=face',
-  'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&h=600&fit=crop&crop=face',
   'https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?w=400&h=600&fit=crop&crop=face',
-  'https://images.unsplash.com/photo-1504257432389-52343af06ae3?w=400&h=600&fit=crop&crop=face',
   'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=600&fit=crop&crop=face',
-  'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=600&fit=crop&crop=face',
   'https://images.unsplash.com/photo-1485893086445-ed75865251e0?w=400&h=600&fit=crop&crop=face',
+];
+
+// Profi Unsplash képek - FÉRFI portrék
+const MALE_IMAGES = [
+  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=600&fit=crop&crop=face',
+  'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=600&fit=crop&crop=face',
+  'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=600&fit=crop&crop=face',
+  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=600&fit=crop&crop=face',
+  'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=400&h=600&fit=crop&crop=face',
+  'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&h=600&fit=crop&crop=face',
+  'https://images.unsplash.com/photo-1504257432389-52343af06ae3?w=400&h=600&fit=crop&crop=face',
+  'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=600&fit=crop&crop=face',
   'https://images.unsplash.com/photo-1463453091185-61582044d556?w=400&h=600&fit=crop&crop=face',
 ];
 
 let userIdCounter = 100;
-let imageIndex = 0;
+let femaleImageIndex = 0;
+let maleImageIndex = 0;
 
-const generateRandomUser = (): User => {
-  const isFemale = Math.random() > 0.5;
+// gender: 'nő' | 'férfi' | 'mindegy' | ''
+const generateRandomUser = (preferredGender: string = ''): User => {
+  let isFemale: boolean;
+  if (preferredGender === 'nő') {
+    isFemale = true;
+  } else if (preferredGender === 'férfi') {
+    isFemale = false;
+  } else {
+    isFemale = Math.random() > 0.5;
+  }
   const names = isFemale ? FIRST_NAMES_FEMALE : FIRST_NAMES_MALE;
   const name = names[Math.floor(Math.random() * names.length)];
   const age = Math.floor(Math.random() * 15) + 20; // 20-35
   const bio = BIOS[Math.floor(Math.random() * BIOS.length)];
   const distance = `${Math.floor(Math.random() * 20) + 1} km`;
-  
-  // Profi képek sorban
-  const image = PROFILE_IMAGES[imageIndex % PROFILE_IMAGES.length];
-  imageIndex++;
+
+  // Nemnek megfelelő kép
+  let image: string;
+  if (isFemale) {
+    image = FEMALE_IMAGES[femaleImageIndex % FEMALE_IMAGES.length];
+    femaleImageIndex++;
+  } else {
+    image = MALE_IMAGES[maleImageIndex % MALE_IMAGES.length];
+    maleImageIndex++;
+  }
   
   // Random 2-4 interests
   const shuffled = [...INTERESTS].sort(() => 0.5 - Math.random());
@@ -94,8 +114,8 @@ const generateRandomUser = (): User => {
   };
 };
 
-const generateInitialUsers = (count: number): User[] => {
-  return Array.from({ length: count }, () => generateRandomUser());
+const generateInitialUsers = (count: number, preferredGender: string = ''): User[] => {
+  return Array.from({ length: count }, () => generateRandomUser(preferredGender));
 };
 
 /* ------------------------------------------------------------------ */
@@ -120,6 +140,27 @@ const KindRLogo: React.FC = () => (
     </span>
   </div>
 );
+
+/* ------------------------------------------------------------------ */
+/*  Profile button (opens edit modal)                                   */
+/* ------------------------------------------------------------------ */
+interface ProfileButtonProps {
+  onOpenModal: () => void;
+}
+
+const ProfileButton: React.FC<ProfileButtonProps> = ({ onOpenModal }) => {
+  return (
+    <button
+      onClick={onOpenModal}
+      className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-100 transition-all duration-300"
+      title="Profil szerkesztése"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-gray-600 hover:text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A9 9 0 1119.88 6.196 9 9 0 015.12 17.804zM15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+    </button>
+  );
+};
 
 /* ------------------------------------------------------------------ */
 /*  Swipe overlay indicator (LIKE / NOPE / SUPER)                      */
@@ -172,8 +213,20 @@ const SwipeIndicator: React.FC<SwipeIndicatorProps> = ({ offsetX, offsetY, isSup
 /* ------------------------------------------------------------------ */
 /*  Main component                                                     */
 /* ------------------------------------------------------------------ */
+interface EditProfileData {
+  életkor: string;
+  nem: string;
+  bio: string;
+  város: string;
+  keresett_nem: string;
+  min_életkor: string;
+  max_életkor: string;
+  kapcsolat_típusa: string;
+}
+
 const SwipeCards: React.FC = () => {
-  const [users, setUsers] = useState<User[]>(() => generateInitialUsers(5));
+  const preferredGenderRef = useRef<string>('');
+  const [users, setUsers] = useState<User[]>([]);
   const [swipedUsers, setSwipedUsers] = useState<User[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
@@ -183,6 +236,21 @@ const SwipeCards: React.FC = () => {
   const [showMatch, setShowMatch] = useState(false);
   const [matchedUser, setMatchedUser] = useState<User | null>(null);
   const [boostActive, setBoostActive] = useState(false);
+  
+  // Profile edit modal state
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editFormData, setEditFormData] = useState<EditProfileData>({
+    életkor: '',
+    nem: '',
+    bio: '',
+    város: '',
+    keresett_nem: '',
+    min_életkor: '',
+    max_életkor: '',
+    kapcsolat_típusa: '',
+  });
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+  
   const cardRef = useRef<HTMLDivElement>(null);
 
   // mutable refs so document-level handlers never read stale state
@@ -194,13 +262,71 @@ const SwipeCards: React.FC = () => {
   const moveHandlerRef = useRef<((e: MouseEvent) => void) | null>(null);
   const upHandlerRef = useRef<((e: MouseEvent) => void) | null>(null);
 
+  // Fetch profile to get preferred gender, then generate initial users
+  useEffect(() => {
+    api.get('profile/').then((res) => {
+      const pg: string = res.data.preferred_gender || '';
+      preferredGenderRef.current = pg;
+      setUsers(generateInitialUsers(5, pg));
+    }).catch(() => {
+      // fallback: generate without filter
+      setUsers(generateInitialUsers(5));
+    });
+  }, []);
+
   // Add more users when running low
   useEffect(() => {
     if (users.length - currentIndex < 3) {
-      const newUsers = Array.from({ length: 5 }, () => generateRandomUser());
+      const newUsers = Array.from({ length: 5 }, () => generateRandomUser(preferredGenderRef.current));
       setUsers(prev => [...prev, ...newUsers]);
     }
   }, [currentIndex, users.length]);
+
+  // Load profile data when modal opens
+  const loadProfileData = async () => {
+    try {
+      const response = await api.get('profile/');
+      const profileData = response.data;
+      setEditFormData({
+        életkor: profileData.életkor || '',
+        nem: profileData.nem || '',
+        bio: profileData.bio || '',
+        város: profileData.város || '',
+        keresett_nem: profileData.keresett_nem || '',
+        min_életkor: profileData.min_életkor || '',
+        max_életkor: profileData.max_életkor || '',
+        kapcsolat_típusa: profileData.kapcsolat_típusa || '',
+      });
+      setShowEditModal(true);
+    } catch (error) {
+      console.error('Profil betöltési hiba:', error);
+      alert('Nem sikerült a profil betöltése');
+    }
+  };
+
+  const handleEditFormChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setEditFormData(prev => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSaveProfile = async () => {
+    setIsSavingProfile(true);
+    try {
+      await api.put('profile/', editFormData);
+      alert('Profil sikeresen frissítve!');
+      setShowEditModal(false);
+    } catch (error: any) {
+      console.error('Profil mentési hiba:', error);
+      alert(error.response?.data?.detail || 'Hiba a profil mentésekor');
+    } finally {
+      setIsSavingProfile(false);
+    }
+  };
 
   /* ---------- handlers ---------- */
   useEffect(() => {
@@ -321,10 +447,177 @@ const SwipeCards: React.FC = () => {
   /* ---------- render ---------- */
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col overflow-hidden">
-      {/* Match Animation Overlay */}
+      {/* ---- Edit Profile Modal ---- */}
+      {showEditModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            {/* Header */}
+            <div className="sticky top-0 bg-white px-6 py-5 border-b border-gray-200 flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-gray-800">Profil szerkesztése</h2>
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Form Content */}
+            <div className="px-6 py-6 space-y-5">
+              {/* Age and Gender row */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Életkor
+                  </label>
+                  <input
+                    type="number"
+                    name="életkor"
+                    placeholder="25"
+                    value={editFormData.életkor}
+                    onChange={handleEditFormChange}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Nem
+                  </label>
+                  <select
+                    name="nem"
+                    value={editFormData.nem}
+                    onChange={handleEditFormChange}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all cursor-pointer"
+                  >
+                    <option value="">Válassz</option>
+                    <option value="férfi">Férfi</option>
+                    <option value="nő">Nő</option>
+                    <option value="egyéb">Egyéb</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* City */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Város
+                </label>
+                <input
+                  type="text"
+                  name="város"
+                  placeholder="Budapest"
+                  value={editFormData.város}
+                  onChange={handleEditFormChange}
+                  className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all"
+                />
+              </div>
+
+              {/* Bio */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Bemutatkozás
+                </label>
+                <textarea
+                  name="bio"
+                  placeholder="Írj magadról pár sort..."
+                  value={editFormData.bio}
+                  onChange={handleEditFormChange}
+                  rows={4}
+                  className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all resize-none"
+                />
+              </div>
+
+              {/* Keresett nem */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Keresett nem
+                </label>
+                <select
+                  name="keresett_nem"
+                  value={editFormData.keresett_nem}
+                  onChange={handleEditFormChange}
+                  className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all cursor-pointer"
+                >
+                  <option value="">Válassz</option>
+                  <option value="férfi">Férfi</option>
+                  <option value="nő">Nő</option>
+                  <option value="mindkettő">Mindkettő</option>
+                </select>
+              </div>
+
+              {/* Age range */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Min. életkor
+                  </label>
+                  <input
+                    type="number"
+                    name="min_életkor"
+                    placeholder="18"
+                    value={editFormData.min_életkor}
+                    onChange={handleEditFormChange}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Max. életkor
+                  </label>
+                  <input
+                    type="number"
+                    name="max_életkor"
+                    placeholder="50"
+                    value={editFormData.max_életkor}
+                    onChange={handleEditFormChange}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all"
+                  />
+                </div>
+              </div>
+
+              {/* Kapcsolat típusa */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Kapcsolat típusa
+                </label>
+                <select
+                  name="kapcsolat_típusa"
+                  value={editFormData.kapcsolat_típusa}
+                  onChange={handleEditFormChange}
+                  className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all cursor-pointer"
+                >
+                  <option value="">Válassz</option>
+                  <option value="komoly">Komoly kapcsolat</option>
+                  <option value="szórakoztató">Szórakoztató</option>
+                  <option value="barátság">Barátság</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Footer with action buttons */}
+            <div className="sticky bottom-0 bg-gray-50 px-6 py-4 border-t border-gray-200 flex gap-3 justify-end">
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="px-5 py-2 rounded-lg border border-gray-300 text-gray-700 font-medium hover:bg-gray-100 transition-colors"
+              >
+                Mégse
+              </button>
+              <button
+                onClick={handleSaveProfile}
+                disabled={isSavingProfile}
+                className="px-5 py-2 rounded-lg bg-gradient-to-r from-rose-500 to-pink-600 text-white font-medium hover:shadow-lg hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
+              >
+                {isSavingProfile ? 'Mentés...' : 'Mentés'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {showMatch && matchedUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-b from-rose-600/95 to-pink-700/95 backdrop-blur-sm">
-          <div className="text-center px-8">
+          <div className="text-center px-10 py-6">
             {/* Animated hearts background */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
               {[...Array(20)].map((_, i) => (
@@ -344,7 +637,7 @@ const SwipeCards: React.FC = () => {
             </div>
             
             {/* Profile pictures */}
-            <div className="flex items-center justify-center gap-4 mb-6 relative z-10">
+            <div className="flex items-center justify-center gap-6 mb-8 relative z-10">
               <div className="w-28 h-28 rounded-full border-4 border-white shadow-2xl overflow-hidden transform -rotate-12 hover:rotate-0 transition-transform">
                 <img 
                   src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&h=200&fit=crop&crop=face" 
@@ -366,7 +659,7 @@ const SwipeCards: React.FC = () => {
             <h2 className="text-5xl font-black text-white mb-3 drop-shadow-lg animate-bounce">
               It's a Match! 🎉
             </h2>
-            <p className="text-white/90 text-xl mb-8">
+            <p className="text-white/90 text-xl mb-10">
               Te és <span className="font-bold">{matchedUser.name}</span> kedvelitek egymást!
             </p>
             
@@ -377,7 +670,7 @@ const SwipeCards: React.FC = () => {
                   setShowMatch(false);
                   setMatchedUser(null);
                 }}
-                className="px-8 py-3 bg-white text-rose-600 font-bold rounded-full shadow-lg hover:scale-105 transition-transform"
+                className="px-10 py-4 bg-white text-rose-600 font-bold rounded-full shadow-lg hover:scale-105 transition-transform"
               >
                 Üzenet küldése
               </button>
@@ -386,7 +679,7 @@ const SwipeCards: React.FC = () => {
                   setShowMatch(false);
                   setMatchedUser(null);
                 }}
-                className="px-8 py-3 bg-white/20 text-white font-bold rounded-full hover:bg-white/30 transition-colors"
+                className="px-10 py-4 bg-white/20 text-white font-bold rounded-full hover:bg-white/30 transition-colors"
               >
                 Folytatás
               </button>
@@ -408,7 +701,7 @@ const SwipeCards: React.FC = () => {
       )}
 
       {/* ---- top bar ---- */}
-      <header className="shrink-0 flex items-center justify-between px-6 py-4 bg-white shadow-sm z-30">
+      <header className="shrink-0 flex items-center justify-between px-8 py-5 bg-white shadow-sm z-30">
         <button className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-100 transition-all duration-300">
           <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16"/>
@@ -416,21 +709,25 @@ const SwipeCards: React.FC = () => {
         </button>
 
         <KindRLogo />
+        <div className="flex items-center gap-3">
+          {/* Profile button - opens profile editor */}
+          <ProfileButton onOpenModal={loadProfileData} />
 
-        <button 
-          onClick={logout}
-          className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-rose-100 transition-all duration-300"
-          title="Kijelentkezés"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-gray-600 hover:text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-          </svg>
-        </button>
+          <button 
+            onClick={logout}
+            className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-rose-100 transition-all duration-300"
+            title="Kijelentkezés"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-gray-600 hover:text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+          </button>
+        </div>
       </header>
 
       {/* ---- card area ---- */}
-      <main className="flex-1 flex items-center justify-center px-4 py-6">
-        <div className="relative w-full max-w-sm" style={{ height: '500px' }}>
+      <main className="flex-1 flex items-center justify-center px-6 py-8">
+        <div className="relative w-full max-w-sm" style={{ height: '520px' }}>
           {/* stacked cards behind active */}
           {users.slice(currentIndex + 1, currentIndex + 3).reverse().map((user, i) => (
             <div
@@ -484,10 +781,10 @@ const SwipeCards: React.FC = () => {
               <SwipeIndicator offsetX={offsetX} offsetY={offsetY} isSuperLike={offsetY < -50} />
 
               {/* user info — pinned to bottom-left */}
-              <div className="absolute bottom-0 left-0 right-0 px-5 pb-6 pt-20 text-white">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="px-2 py-0.5 bg-emerald-500/80 rounded-full text-xs font-medium">Online</span>
-                  <span className="px-2 py-0.5 bg-white/20 backdrop-blur-sm rounded-full text-xs">{currentUser.distance} távolságra</span>
+              <div className="absolute bottom-0 left-0 right-0 px-6 pb-8 pt-24 text-white">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="px-3 py-1 bg-emerald-500/80 rounded-full text-xs font-medium">Online</span>
+                  <span className="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-xs">{currentUser.distance} távolságra</span>
                 </div>
                 
                 <h2 className="text-4xl font-black leading-none tracking-tight">
@@ -498,11 +795,11 @@ const SwipeCards: React.FC = () => {
                 <p className="mt-2 text-base text-white/90 leading-snug line-clamp-2">{currentUser.bio}</p>
                 
                 {/* Interests */}
-                <div className="flex flex-wrap gap-2 mt-3">
+                <div className="flex flex-wrap gap-2 mt-4">
                   {currentUser.interests.map((interest, idx) => (
                     <span 
                       key={idx}
-                      className="px-3 py-1 bg-white/15 backdrop-blur-sm rounded-full text-sm font-medium"
+                      className="px-3 py-1.5 bg-white/15 backdrop-blur-sm rounded-full text-sm font-medium"
                     >
                       {interest}
                     </span>
@@ -515,7 +812,7 @@ const SwipeCards: React.FC = () => {
       </main>
 
       {/* ---- action buttons ---- */}
-      <footer className="shrink-0 flex items-center justify-center gap-3 pb-8 pt-4">
+      <footer className="shrink-0 flex items-center justify-center gap-4 pb-10 pt-6">
         {/* rewind */}
         <button 
           onClick={handleRewind}
