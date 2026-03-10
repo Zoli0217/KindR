@@ -13,6 +13,7 @@ interface Props {
 }
 
 export default function Profile({ nextStep, handleChange, formData }: Props) {
+  const isEditing = Object.values(formData).some((v) => v !== "");
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-rose-50 via-pink-50 to-rose-100 px-6 py-10">
 
@@ -74,6 +75,9 @@ export default function Profile({ nextStep, handleChange, formData }: Props) {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-600 mb-2">🎂 Életkor</label>
+                {formData.életkor && (
+                  <div className="text-xs text-gray-500 mb-1">Jelenleg: {formData.életkor}</div>
+                )}
                 <input
                   type="number"
                   name="életkor"
@@ -85,6 +89,9 @@ export default function Profile({ nextStep, handleChange, formData }: Props) {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-600 mb-2">👤 Nem</label>
+                {formData.nem && (
+                  <div className="text-xs text-gray-500 mb-1">Jelenleg: {formData.nem}</div>
+                )}
                 <select
                   name="nem"
                   value={formData.nem}
@@ -102,6 +109,9 @@ export default function Profile({ nextStep, handleChange, formData }: Props) {
             {/* City */}
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-2">📍 Város</label>
+              {formData.város && (
+                <div className="text-xs text-gray-500 mb-1">Jelenleg: {formData.város}</div>
+              )}
               <input
                 type="text"
                 name="város"
@@ -115,6 +125,9 @@ export default function Profile({ nextStep, handleChange, formData }: Props) {
             {/* Bio */}
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-2">✏️ Bemutatkozás</label>
+              {formData.bio && (
+                <div className="text-xs text-gray-500 mb-1">Jelenleg: {formData.bio}</div>
+              )}
               <textarea
                 name="bio"
                 placeholder="Írj magadról pár sort... Mi az, amit szeretsz csinálni? 🎯"
@@ -127,9 +140,14 @@ export default function Profile({ nextStep, handleChange, formData }: Props) {
 
             <button
               onClick={nextStep}
-              className="w-full py-4 mt-2 bg-gradient-to-r from-rose-500 to-pink-500 text-white font-semibold rounded-xl shadow-lg hover:from-rose-600 hover:to-pink-600 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2"
+              className={
+                `w-full py-4 mt-2 font-semibold rounded-xl shadow-lg transition-all duration-200 flex items-center justify-center gap-2 ` +
+                (isEditing
+                  ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:from-green-600 hover:to-emerald-600 active:scale-[0.98]"
+                  : "bg-gradient-to-r from-rose-500 to-pink-500 text-white hover:from-rose-600 hover:to-pink-600 hover:scale-[1.02] active:scale-[0.98]")
+              }
             >
-              <span>Tovább</span>
+              <span>{isEditing ? "Mentés" : "Tovább"}</span>
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>

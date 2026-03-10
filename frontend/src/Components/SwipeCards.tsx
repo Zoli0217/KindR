@@ -165,6 +165,27 @@ const KindRLogo: React.FC = () => (
 );
 
 /* ------------------------------------------------------------------ */
+/*  Profile button (opens edit modal)                                   */
+/* ------------------------------------------------------------------ */
+interface ProfileButtonProps {
+  onOpenModal: () => void;
+}
+
+const ProfileButton: React.FC<ProfileButtonProps> = ({ onOpenModal }) => {
+  return (
+    <button
+      onClick={onOpenModal}
+      className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-100 transition-all duration-300"
+      title="Profil szerkesztése"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-gray-600 hover:text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A9 9 0 1119.88 6.196 9 9 0 015.12 17.804zM15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+    </button>
+  );
+};
+
+/* ------------------------------------------------------------------ */
 /*  Swipe overlay indicator (LIKE / NOPE / SUPER)                      */
 /* ------------------------------------------------------------------ */
 interface SwipeIndicatorProps {
@@ -215,6 +236,17 @@ const SwipeIndicator: React.FC<SwipeIndicatorProps> = ({ offsetX, offsetY, isSup
 /* ------------------------------------------------------------------ */
 /*  Main component                                                     */
 /* ------------------------------------------------------------------ */
+interface EditProfileData {
+  életkor: string;
+  nem: string;
+  bio: string;
+  város: string;
+  keresett_nem: string;
+  min_életkor: string;
+  max_életkor: string;
+  kapcsolat_típusa: string;
+}
+
 const SwipeCards: React.FC = () => {
   const navigate = useNavigate();
   const preferredGenderRef = useRef<string>('');
@@ -228,6 +260,21 @@ const SwipeCards: React.FC = () => {
   const [showMatch, setShowMatch] = useState(false);
   const [matchedUser, setMatchedUser] = useState<User | null>(null);
   const [boostActive, setBoostActive] = useState(false);
+  
+  // Profile edit modal state
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editFormData, setEditFormData] = useState<EditProfileData>({
+    életkor: '',
+    nem: '',
+    bio: '',
+    város: '',
+    keresett_nem: '',
+    min_életkor: '',
+    max_életkor: '',
+    kapcsolat_típusa: '',
+  });
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+  
   const cardRef = useRef<HTMLDivElement>(null);
 
   // mutable refs so document-level handlers never read stale state
@@ -271,6 +318,71 @@ const SwipeCards: React.FC = () => {
       setUsers(prev => [...prev, ...newUsers]);
     }
   }, [currentIndex, users.length]);
+
+  // Load profile data when modal opens
+  const loadProfileData = async () => {
+    try {
+      const response = await api.get('profile/');
+      const profileData = response.data;
+      // Map backend field names to frontend form keys (support both English and Hungarian keys)
+      const mapToFrontend = (p: any) => ({
+        életkor: p.életkor ?? p.age ?? '',
+        nem: p.nem ?? p.gender ?? '',
+        bio: p.bio ?? '',
+        város: p.város ?? p.city ?? '',
+        keresett_nem: p.keresett_nem ?? p.preferred_gender ?? '',
+        min_életkor: p.min_életkor ?? p.min_age ?? '',
+        max_életkor: p.max_életkor ?? p.max_age ?? '',
+        kapcsolat_típusa: p.kapcsolat_típusa ?? p.relationship_type ?? '',
+      });
+
+      setEditFormData(mapToFrontend(profileData));
+      setShowEditModal(true);
+    } catch (error) {
+      console.error('Profil betöltési hiba:', error);
+      // keep a user-friendly message but avoid blocking UX
+      console.error('Nem sikerült a profil betöltése');
+    }
+  };
+
+  const handleEditFormChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setEditFormData(prev => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSaveProfile = async () => {
+    setIsSavingProfile(true);
+    try {
+      // Map frontend keys back to backend field names
+      const payload = {
+        age: editFormData.életkor || null,
+        gender: editFormData.nem || null,
+        bio: editFormData.bio || null,
+        city: editFormData.város || null,
+        preferred_gender: editFormData.keresett_nem || null,
+        min_age: editFormData.min_életkor || null,
+        max_age: editFormData.max_életkor || null,
+        relationship_type: editFormData.kapcsolat_típusa || null,
+      };
+
+      await api.put('profile/', payload);
+      // Notify app/profile that profile changed
+      window.dispatchEvent(new Event('authChanged'));
+      setShowEditModal(false);
+    } catch (error: any) {
+      console.error('Profil mentési hiba:', error);
+      // show backend error in console and fallback to alert for now
+      console.error(error.response?.data || error.message);
+      alert(error.response?.data?.detail || 'Hiba a profil mentésekor');
+    } finally {
+      setIsSavingProfile(false);
+    }
+  };
 
   /* ---------- handlers ---------- */
   useEffect(() => {
@@ -386,7 +498,174 @@ const SwipeCards: React.FC = () => {
   /* ---------- render ---------- */
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col overflow-hidden">
-      {/* Match Animation Overlay */}
+      {/* ---- Edit Profile Modal ---- */}
+      {showEditModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            {/* Header */}
+            <div className="sticky top-0 bg-white px-6 py-5 border-b border-gray-200 flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-gray-800">Profil szerkesztése</h2>
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Form Content */}
+            <div className="px-6 py-6 space-y-5">
+              {/* Age and Gender row */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Életkor
+                  </label>
+                  <input
+                    type="number"
+                    name="életkor"
+                    placeholder="25"
+                    value={editFormData.életkor}
+                    onChange={handleEditFormChange}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Nem
+                  </label>
+                  <select
+                    name="nem"
+                    value={editFormData.nem}
+                    onChange={handleEditFormChange}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all cursor-pointer"
+                  >
+                    <option value="">Válassz</option>
+                    <option value="férfi">Férfi</option>
+                    <option value="nő">Nő</option>
+                    <option value="egyéb">Egyéb</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* City */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Város
+                </label>
+                <input
+                  type="text"
+                  name="város"
+                  placeholder="Budapest"
+                  value={editFormData.város}
+                  onChange={handleEditFormChange}
+                  className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all"
+                />
+              </div>
+
+              {/* Bio */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Bemutatkozás
+                </label>
+                <textarea
+                  name="bio"
+                  placeholder="Írj magadról pár sort..."
+                  value={editFormData.bio}
+                  onChange={handleEditFormChange}
+                  rows={4}
+                  className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all resize-none"
+                />
+              </div>
+
+              {/* Keresett nem */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Keresett nem
+                </label>
+                <select
+                  name="keresett_nem"
+                  value={editFormData.keresett_nem}
+                  onChange={handleEditFormChange}
+                  className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all cursor-pointer"
+                >
+                  <option value="">Válassz</option>
+                  <option value="férfi">Férfi</option>
+                  <option value="nő">Nő</option>
+                  <option value="mindkettő">Mindkettő</option>
+                </select>
+              </div>
+
+              {/* Age range */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Min. életkor
+                  </label>
+                  <input
+                    type="number"
+                    name="min_életkor"
+                    placeholder="18"
+                    value={editFormData.min_életkor}
+                    onChange={handleEditFormChange}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Max. életkor
+                  </label>
+                  <input
+                    type="number"
+                    name="max_életkor"
+                    placeholder="50"
+                    value={editFormData.max_életkor}
+                    onChange={handleEditFormChange}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all"
+                  />
+                </div>
+              </div>
+
+              {/* Kapcsolat típusa */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Kapcsolat típusa
+                </label>
+                <select
+                  name="kapcsolat_típusa"
+                  value={editFormData.kapcsolat_típusa}
+                  onChange={handleEditFormChange}
+                  className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all cursor-pointer"
+                >
+                  <option value="">Válassz</option>
+                  <option value="komoly">Komoly kapcsolat</option>
+                  <option value="szórakoztató">Szórakoztató</option>
+                  <option value="barátság">Barátság</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Footer with action buttons */}
+            <div className="sticky bottom-0 bg-gray-50 px-6 py-4 border-t border-gray-200 flex gap-3 justify-end">
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="px-5 py-2 rounded-lg border border-gray-300 text-gray-700 font-medium hover:bg-gray-100 transition-colors"
+              >
+                Mégse
+              </button>
+              <button
+                onClick={handleSaveProfile}
+                disabled={isSavingProfile}
+                className="px-5 py-2 rounded-lg bg-gradient-to-r from-rose-500 to-pink-600 text-white font-medium hover:shadow-lg hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
+              >
+                {isSavingProfile ? 'Mentés...' : 'Mentés'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {showMatch && matchedUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-b from-rose-600/95 to-pink-700/95 backdrop-blur-sm">
           <div className="text-center px-10 py-6">
@@ -491,16 +770,20 @@ const SwipeCards: React.FC = () => {
         </button>
 
         <KindRLogo />
+        <div className="flex items-center gap-3">
+          {/* Profile button - opens profile editor */}
+          <ProfileButton onOpenModal={loadProfileData} />
 
-        <button 
-          onClick={logout}
-          className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-rose-100 transition-all duration-300"
-          title="Kijelentkezés"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-gray-600 hover:text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-          </svg>
-        </button>
+          <button 
+            onClick={logout}
+            className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-rose-100 transition-all duration-300"
+            title="Kijelentkezés"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-gray-600 hover:text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+          </button>
+        </div>
       </header>
 
       {/* ---- card area ---- */}
