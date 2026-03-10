@@ -46,7 +46,18 @@ export default function Profil_maker() {
   const handleSubmit = async (): Promise<void> => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await api.put("profile/", formData, {
+      // Map Hungarian field names to backend API field names
+      const payload = {
+        age: formData.életkor,
+        gender: formData.nem,
+        bio: formData.bio,
+        city: formData.város,
+        preferred_gender: formData.keresett_nem,
+        min_age: formData.min_életkor,
+        max_age: formData.max_életkor,
+        relationship_type: formData.kapcsolat_típusa,
+      };
+      const response = await api.put("profile/", payload, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
