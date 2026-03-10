@@ -138,7 +138,7 @@ export default function Preferences({ nextStep, prevStep, handleChange, formData
               </label>
               <select
                 name="relationship_type"
-                value={formData.relationship_type}
+                value={formData.kapcsolat_típusa}
                 onChange={handleChange}
                 className="w-full px-5 py-4 rounded-xl bg-slate-800/50 border border-slate-700/50 text-white focus:outline-none focus:ring-2 focus:ring-purple-400/50 focus:border-purple-400/50 transition-all duration-300 hover:border-slate-600 appearance-none cursor-pointer"
               >
