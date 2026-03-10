@@ -41,44 +41,63 @@ const BIOS = [
 
 const INTERESTS = ['🎵 Zene', '📚 Könyvek', '🎮 Gaming', '✈️ Utazás', '🍕 Főzés', '💪 Fitness', '🎬 Filmek', '📷 Fotózás', '🎨 Művészet', '🐕 Állatok', '☕ Kávé', '🌿 Természet', '⚽ Sport', '🎸 Hangszerek', '🧘 Jóga'];
 
-// Profi Unsplash képek - modellek/portrék
-const PROFILE_IMAGES = [
+// Profi Unsplash képek - NŐI portrék
+const FEMALE_IMAGES = [
   'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=600&fit=crop&crop=face',
-  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=600&fit=crop&crop=face',
   'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&h=600&fit=crop&crop=face',
-  'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=600&fit=crop&crop=face',
   'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=600&fit=crop&crop=face',
   'https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=400&h=600&fit=crop&crop=face',
   'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=600&fit=crop&crop=face',
-  'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=600&fit=crop&crop=face',
   'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&h=600&fit=crop&crop=face',
-  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=600&fit=crop&crop=face',
   'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=600&fit=crop&crop=face',
-  'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=400&h=600&fit=crop&crop=face',
   'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&h=600&fit=crop&crop=face',
-  'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&h=600&fit=crop&crop=face',
   'https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?w=400&h=600&fit=crop&crop=face',
-  'https://images.unsplash.com/photo-1504257432389-52343af06ae3?w=400&h=600&fit=crop&crop=face',
   'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=600&fit=crop&crop=face',
-  'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=600&fit=crop&crop=face',
   'https://images.unsplash.com/photo-1485893086445-ed75865251e0?w=400&h=600&fit=crop&crop=face',
+];
+
+// Profi Unsplash képek - FÉRFI portrék
+const MALE_IMAGES = [
+  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=600&fit=crop&crop=face',
+  'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=600&fit=crop&crop=face',
+  'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=600&fit=crop&crop=face',
+  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=600&fit=crop&crop=face',
+  'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=400&h=600&fit=crop&crop=face',
+  'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&h=600&fit=crop&crop=face',
+  'https://images.unsplash.com/photo-1504257432389-52343af06ae3?w=400&h=600&fit=crop&crop=face',
+  'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=600&fit=crop&crop=face',
   'https://images.unsplash.com/photo-1463453091185-61582044d556?w=400&h=600&fit=crop&crop=face',
 ];
 
 let userIdCounter = 100;
-let imageIndex = 0;
+let femaleImageIndex = 0;
+let maleImageIndex = 0;
 
-const generateRandomUser = (): User => {
-  const isFemale = Math.random() > 0.5;
+// gender: 'nő' | 'férfi' | 'mindegy' | ''
+const generateRandomUser = (preferredGender: string = ''): User => {
+  let isFemale: boolean;
+  if (preferredGender === 'nő') {
+    isFemale = true;
+  } else if (preferredGender === 'férfi') {
+    isFemale = false;
+  } else {
+    isFemale = Math.random() > 0.5;
+  }
   const names = isFemale ? FIRST_NAMES_FEMALE : FIRST_NAMES_MALE;
   const name = names[Math.floor(Math.random() * names.length)];
   const age = Math.floor(Math.random() * 15) + 20; // 20-35
   const bio = BIOS[Math.floor(Math.random() * BIOS.length)];
   const distance = `${Math.floor(Math.random() * 20) + 1} km`;
-  
-  // Profi képek sorban
-  const image = PROFILE_IMAGES[imageIndex % PROFILE_IMAGES.length];
-  imageIndex++;
+
+  // Nemnek megfelelő kép
+  let image: string;
+  if (isFemale) {
+    image = FEMALE_IMAGES[femaleImageIndex % FEMALE_IMAGES.length];
+    femaleImageIndex++;
+  } else {
+    image = MALE_IMAGES[maleImageIndex % MALE_IMAGES.length];
+    maleImageIndex++;
+  }
   
   // Random 2-4 interests
   const shuffled = [...INTERESTS].sort(() => 0.5 - Math.random());
@@ -95,8 +114,8 @@ const generateRandomUser = (): User => {
   };
 };
 
-const generateInitialUsers = (count: number): User[] => {
-  return Array.from({ length: count }, () => generateRandomUser());
+const generateInitialUsers = (count: number, preferredGender: string = ''): User[] => {
+  return Array.from({ length: count }, () => generateRandomUser(preferredGender));
 };
 
 /* ------------------------------------------------------------------ */
@@ -206,7 +225,8 @@ interface EditProfileData {
 }
 
 const SwipeCards: React.FC = () => {
-  const [users, setUsers] = useState<User[]>(() => generateInitialUsers(5));
+  const preferredGenderRef = useRef<string>('');
+  const [users, setUsers] = useState<User[]>([]);
   const [swipedUsers, setSwipedUsers] = useState<User[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
@@ -242,10 +262,22 @@ const SwipeCards: React.FC = () => {
   const moveHandlerRef = useRef<((e: MouseEvent) => void) | null>(null);
   const upHandlerRef = useRef<((e: MouseEvent) => void) | null>(null);
 
+  // Fetch profile to get preferred gender, then generate initial users
+  useEffect(() => {
+    api.get('profile/').then((res) => {
+      const pg: string = res.data.preferred_gender || '';
+      preferredGenderRef.current = pg;
+      setUsers(generateInitialUsers(5, pg));
+    }).catch(() => {
+      // fallback: generate without filter
+      setUsers(generateInitialUsers(5));
+    });
+  }, []);
+
   // Add more users when running low
   useEffect(() => {
     if (users.length - currentIndex < 3) {
-      const newUsers = Array.from({ length: 5 }, () => generateRandomUser());
+      const newUsers = Array.from({ length: 5 }, () => generateRandomUser(preferredGenderRef.current));
       setUsers(prev => [...prev, ...newUsers]);
     }
   }, [currentIndex, users.length]);
@@ -585,7 +617,7 @@ const SwipeCards: React.FC = () => {
       )}
       {showMatch && matchedUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-b from-rose-600/95 to-pink-700/95 backdrop-blur-sm">
-          <div className="text-center px-8">
+          <div className="text-center px-10 py-6">
             {/* Animated hearts background */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
               {[...Array(20)].map((_, i) => (
@@ -605,7 +637,7 @@ const SwipeCards: React.FC = () => {
             </div>
             
             {/* Profile pictures */}
-            <div className="flex items-center justify-center gap-4 mb-6 relative z-10">
+            <div className="flex items-center justify-center gap-6 mb-8 relative z-10">
               <div className="w-28 h-28 rounded-full border-4 border-white shadow-2xl overflow-hidden transform -rotate-12 hover:rotate-0 transition-transform">
                 <img 
                   src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&h=200&fit=crop&crop=face" 
@@ -627,7 +659,7 @@ const SwipeCards: React.FC = () => {
             <h2 className="text-5xl font-black text-white mb-3 drop-shadow-lg animate-bounce">
               It's a Match! 🎉
             </h2>
-            <p className="text-white/90 text-xl mb-8">
+            <p className="text-white/90 text-xl mb-10">
               Te és <span className="font-bold">{matchedUser.name}</span> kedvelitek egymást!
             </p>
             
@@ -638,7 +670,7 @@ const SwipeCards: React.FC = () => {
                   setShowMatch(false);
                   setMatchedUser(null);
                 }}
-                className="px-8 py-3 bg-white text-rose-600 font-bold rounded-full shadow-lg hover:scale-105 transition-transform"
+                className="px-10 py-4 bg-white text-rose-600 font-bold rounded-full shadow-lg hover:scale-105 transition-transform"
               >
                 Üzenet küldése
               </button>
@@ -647,7 +679,7 @@ const SwipeCards: React.FC = () => {
                   setShowMatch(false);
                   setMatchedUser(null);
                 }}
-                className="px-8 py-3 bg-white/20 text-white font-bold rounded-full hover:bg-white/30 transition-colors"
+                className="px-10 py-4 bg-white/20 text-white font-bold rounded-full hover:bg-white/30 transition-colors"
               >
                 Folytatás
               </button>
@@ -669,7 +701,7 @@ const SwipeCards: React.FC = () => {
       )}
 
       {/* ---- top bar ---- */}
-      <header className="shrink-0 flex items-center justify-between px-6 py-4 bg-white shadow-sm z-30">
+      <header className="shrink-0 flex items-center justify-between px-8 py-5 bg-white shadow-sm z-30">
         <button className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-100 transition-all duration-300">
           <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16"/>
@@ -694,8 +726,8 @@ const SwipeCards: React.FC = () => {
       </header>
 
       {/* ---- card area ---- */}
-      <main className="flex-1 flex items-center justify-center px-4 py-6">
-        <div className="relative w-full max-w-sm" style={{ height: '500px' }}>
+      <main className="flex-1 flex items-center justify-center px-6 py-8">
+        <div className="relative w-full max-w-sm" style={{ height: '520px' }}>
           {/* stacked cards behind active */}
           {users.slice(currentIndex + 1, currentIndex + 3).reverse().map((user, i) => (
             <div
@@ -749,10 +781,10 @@ const SwipeCards: React.FC = () => {
               <SwipeIndicator offsetX={offsetX} offsetY={offsetY} isSuperLike={offsetY < -50} />
 
               {/* user info — pinned to bottom-left */}
-              <div className="absolute bottom-0 left-0 right-0 px-5 pb-6 pt-20 text-white">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="px-2 py-0.5 bg-emerald-500/80 rounded-full text-xs font-medium">Online</span>
-                  <span className="px-2 py-0.5 bg-white/20 backdrop-blur-sm rounded-full text-xs">{currentUser.distance} távolságra</span>
+              <div className="absolute bottom-0 left-0 right-0 px-6 pb-8 pt-24 text-white">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="px-3 py-1 bg-emerald-500/80 rounded-full text-xs font-medium">Online</span>
+                  <span className="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-xs">{currentUser.distance} távolságra</span>
                 </div>
                 
                 <h2 className="text-4xl font-black leading-none tracking-tight">
@@ -763,11 +795,11 @@ const SwipeCards: React.FC = () => {
                 <p className="mt-2 text-base text-white/90 leading-snug line-clamp-2">{currentUser.bio}</p>
                 
                 {/* Interests */}
-                <div className="flex flex-wrap gap-2 mt-3">
+                <div className="flex flex-wrap gap-2 mt-4">
                   {currentUser.interests.map((interest, idx) => (
                     <span 
                       key={idx}
-                      className="px-3 py-1 bg-white/15 backdrop-blur-sm rounded-full text-sm font-medium"
+                      className="px-3 py-1.5 bg-white/15 backdrop-blur-sm rounded-full text-sm font-medium"
                     >
                       {interest}
                     </span>
@@ -780,7 +812,7 @@ const SwipeCards: React.FC = () => {
       </main>
 
       {/* ---- action buttons ---- */}
-      <footer className="shrink-0 flex items-center justify-center gap-3 pb-8 pt-4">
+      <footer className="shrink-0 flex items-center justify-center gap-4 pb-10 pt-6">
         {/* rewind */}
         <button 
           onClick={handleRewind}
