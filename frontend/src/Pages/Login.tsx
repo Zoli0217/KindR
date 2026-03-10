@@ -6,6 +6,7 @@ function Login() {
   const [form, setForm] = useState({ username: "", password: "" });
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -13,6 +14,7 @@ function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     setLoading(true);
 
     try {
@@ -22,12 +24,11 @@ function Login() {
       localStorage.setItem("accessToken", access);
       localStorage.setItem("refreshToken", refresh);
 
-      alert("Sikeres bejelentkezés!");
-      // Redirect to home - App.tsx will check profile completion and route accordingly
+      window.dispatchEvent(new Event("authChanged"));
       navigate("/");
     } catch (err) {
       console.error(err);
-      alert("Hibás felhasználónév vagy jelszó");
+      setError("Hibás felhasználónév vagy jelszó");
     } finally {
       setLoading(false);
     }
@@ -36,7 +37,6 @@ function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-rose-50 to-pink-100 px-4">
       <div className="w-full max-w-md">
-        {/* Logo */}
         <div className="flex flex-col items-center mb-8">
           <div className="flex items-center gap-2 mb-2">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-10 h-10 text-rose-500">
@@ -50,11 +50,11 @@ function Login() {
           <p className="text-gray-500 text-sm">Jelentkezz be és találd meg a párod</p>
         </div>
 
-        {/* Card */}
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Bejelentkezés</h2>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            {error && <div className="text-sm text-red-600 text-center">{error}</div>}
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-1">Felhasználónév</label>
               <input

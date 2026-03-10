@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import SwipeCards from './Components/SwipeCards';
 import Login from "./Pages/Login";
+import Register from "./Pages/Register";
 import Profil_maker from "./Pages/Profil_maker"
 import { Routes, Route, Navigate } from "react-router-dom";
 import Logout from "./Pages/Logout";
@@ -20,7 +21,7 @@ function App() {
   useEffect(() => {
     const checkAuthStatus = async () => {
       const token = localStorage.getItem("accessToken");
-      
+
       if (!token) {
         setIsAuthenticated(false);
         setProfileCompleted(false);
@@ -45,6 +46,18 @@ function App() {
     };
 
     checkAuthStatus();
+
+    // Listen for custom auth change events so SPA can react without a full reload
+    const onAuthChanged = () => {
+      setLoading(true);
+      checkAuthStatus();
+    };
+
+    window.addEventListener("authChanged", onAuthChanged);
+
+    return () => {
+      window.removeEventListener("authChanged", onAuthChanged);
+    };
   }, []);
 
   if (loading) {
@@ -56,6 +69,10 @@ function App() {
       <Route 
         path="/login" 
         element={!isAuthenticated ? <Login /> : <Navigate to={profileCompleted ? "/swipe" : "/profile-maker"} replace />} 
+      />
+      <Route
+        path="/register"
+        element={!isAuthenticated ? <Register /> : <Navigate to={profileCompleted ? "/swipe" : "/profile-maker"} replace />}
       />
       <Route 
         path="/profile-maker" 

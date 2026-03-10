@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Profile from "../Components/Profile";
 import Preferences from "../Components/Preferences";
 import Review from "../Components/Review";
-import api from "../api/axios"
+import api, { logout } from "../api/axios"
 
 export interface FormData {
   életkor: string;
@@ -19,6 +19,7 @@ export interface FormData {
 export default function Profil_maker() {
   const [step, setStep] = useState<number>(1);
   const navigate = useNavigate();
+  const [error, setError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<FormData>({
     életkor: "",
@@ -44,6 +45,7 @@ export default function Profil_maker() {
   };
 
   const handleSubmit = async (): Promise<void> => {
+    setError(null);
     try {
       const token = localStorage.getItem("accessToken");
       const response = await api.put("profile/", formData, {
@@ -53,14 +55,14 @@ export default function Profil_maker() {
       });
 
       console.log("Profil frissítve:", response.data);
-      alert("Sikeres profil frissítés!");
       navigate("/swipe");
-    } catch (error: any) {
-      if (error.response) {
-        console.log("Backend hiba:", error.response.data);
-        alert(JSON.stringify(error.response.data));
+    } catch (err: any) {
+      if (err.response) {
+        console.log("Backend hiba:", err.response.data);
+        setError(JSON.stringify(err.response.data));
       } else {
-        console.log("Network hiba:", error.message);
+        console.log("Network hiba:", err.message);
+        setError(err.message);
       }
     }
   };
@@ -68,12 +70,22 @@ export default function Profil_maker() {
   switch (step) {
     case 1:
       return (
-        <Profile
-          nextStep={nextStep}
-          prevStep={prevStep}
-          handleChange={handleChange}
-          formData={formData}
-        />
+        <div>
+          <div className="flex justify-end p-4">
+            <button
+              onClick={() => logout()}
+              className="px-3 py-2 rounded-md bg-rose-500 text-white hover:bg-rose-600"
+            >
+              Kijelentkezés
+            </button>
+          </div>
+          <Profile
+            nextStep={nextStep}
+            prevStep={prevStep}
+            handleChange={handleChange}
+            formData={formData}
+          />
+        </div>
       );
     case 2:
       return (
@@ -86,11 +98,22 @@ export default function Profil_maker() {
       );
     case 3:
       return (
-        <Review
-          prevStep={prevStep}
-          formData={formData}
-          handleSubmit={handleSubmit}
-        />
+        <div>
+          <div className="flex justify-end p-4">
+            <button
+              onClick={() => logout()}
+              className="px-3 py-2 rounded-md bg-rose-500 text-white hover:bg-rose-600"
+            >
+              Kijelentkezés
+            </button>
+          </div>
+          {error && <div className="text-sm text-red-600 text-center">{error}</div>}
+          <Review
+            prevStep={prevStep}
+            formData={formData}
+            handleSubmit={handleSubmit}
+          />
+        </div>
       );
     default:
       return null;
