@@ -7,16 +7,14 @@ interface Props {
 }
 
 const labelMap: Record<keyof FormData, string> = {
-  email: "Email",
-  password: "Jelszó",
-  age: "Életkor",
-  gender: "Nem",
+  életkor: "Életkor",
+  nem: "Nem",
   bio: "Bemutatkozás",
-  city: "Város",
-  preferred_gender: "Preferált nem",
-  min_age: "Min. életkor",
-  max_age: "Max. életkor",
-  relationship_type: "Kapcsolat típusa",
+  város: "Város",
+  keresett_nem: "Preferált nem",
+  min_életkor: "Min. életkor",
+  max_életkor: "Max. életkor",
+  kapcsolat_típusa: "Kapcsolat típusa",
 };
 
 export default function Review({ prevStep, formData, handleSubmit }: Props) {
@@ -39,7 +37,7 @@ export default function Review({ prevStep, formData, handleSubmit }: Props) {
               <div key={key} className="flex justify-between items-start py-2 border-b border-gray-100 last:border-0">
                 <span className="text-sm font-medium text-gray-500">{labelMap[key]}</span>
                 <span className="text-sm text-gray-800 text-right max-w-[60%] break-words">
-                  {key === "password" ? "••••••••" : formData[key] || "—"}
+                 
                 </span>
               </div>
             ))}

@@ -32,9 +32,9 @@ export default function Profile({ nextStep, handleChange, formData }: Props) {
                 <label className="block text-sm font-medium text-gray-600 mb-1">Életkor</label>
                 <input
                   type="number"
-                  name="age"
+                  name="életkor"
                   placeholder="25"
-                  value={formData.age}
+                  value={formData.életkor}
                   onChange={handleChange}
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-rose-400 focus:border-transparent transition"
                 />
@@ -42,15 +42,15 @@ export default function Profile({ nextStep, handleChange, formData }: Props) {
               <div>
                 <label className="block text-sm font-medium text-gray-600 mb-1">Nem</label>
                 <select
-                  name="gender"
-                  value={formData.gender}
+                  name="nem"
+                  value={formData.nem}
                   onChange={handleChange}
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-rose-400 focus:border-transparent transition appearance-none"
                 >
                   <option value="">Válassz</option>
-                  <option value="male">Férfi</option>
-                  <option value="female">Nő</option>
-                  <option value="other">Egyéb</option>
+                  <option value="férfi">Férfi</option>
+                  <option value="nő">Nő</option>
+                  <option value="egyéb">Egyéb</option>
                 </select>
               </div>
             </div>
@@ -59,9 +59,9 @@ export default function Profile({ nextStep, handleChange, formData }: Props) {
               <label className="block text-sm font-medium text-gray-600 mb-1">Város</label>
               <input
                 type="text"
-                name="city"
+                name="város"
                 placeholder="Budapest"
-                value={formData.city}
+                value={formData.város}
                 onChange={handleChange}
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-rose-400 focus:border-transparent transition"
               />
