@@ -287,20 +287,24 @@ const SwipeCards: React.FC = () => {
     try {
       const response = await api.get('profile/');
       const profileData = response.data;
-      setEditFormData({
-        életkor: profileData.életkor || '',
-        nem: profileData.nem || '',
-        bio: profileData.bio || '',
-        város: profileData.város || '',
-        keresett_nem: profileData.keresett_nem || '',
-        min_életkor: profileData.min_életkor || '',
-        max_életkor: profileData.max_életkor || '',
-        kapcsolat_típusa: profileData.kapcsolat_típusa || '',
+      // Map backend field names to frontend form keys (support both English and Hungarian keys)
+      const mapToFrontend = (p: any) => ({
+        életkor: p.életkor ?? p.age ?? '',
+        nem: p.nem ?? p.gender ?? '',
+        bio: p.bio ?? '',
+        város: p.város ?? p.city ?? '',
+        keresett_nem: p.keresett_nem ?? p.preferred_gender ?? '',
+        min_életkor: p.min_életkor ?? p.min_age ?? '',
+        max_életkor: p.max_életkor ?? p.max_age ?? '',
+        kapcsolat_típusa: p.kapcsolat_típusa ?? p.relationship_type ?? '',
       });
+
+      setEditFormData(mapToFrontend(profileData));
       setShowEditModal(true);
     } catch (error) {
       console.error('Profil betöltési hiba:', error);
-      alert('Nem sikerült a profil betöltése');
+      // keep a user-friendly message but avoid blocking UX
+      console.error('Nem sikerült a profil betöltése');
     }
   };
 
@@ -317,11 +321,26 @@ const SwipeCards: React.FC = () => {
   const handleSaveProfile = async () => {
     setIsSavingProfile(true);
     try {
-      await api.put('profile/', editFormData);
-      alert('Profil sikeresen frissítve!');
+      // Map frontend keys back to backend field names
+      const payload = {
+        age: editFormData.életkor || null,
+        gender: editFormData.nem || null,
+        bio: editFormData.bio || null,
+        city: editFormData.város || null,
+        preferred_gender: editFormData.keresett_nem || null,
+        min_age: editFormData.min_életkor || null,
+        max_age: editFormData.max_életkor || null,
+        relationship_type: editFormData.kapcsolat_típusa || null,
+      };
+
+      await api.put('profile/', payload);
+      // Notify app/profile that profile changed
+      window.dispatchEvent(new Event('authChanged'));
       setShowEditModal(false);
     } catch (error: any) {
       console.error('Profil mentési hiba:', error);
+      // show backend error in console and fallback to alert for now
+      console.error(error.response?.data || error.message);
       alert(error.response?.data?.detail || 'Hiba a profil mentésekor');
     } finally {
       setIsSavingProfile(false);
