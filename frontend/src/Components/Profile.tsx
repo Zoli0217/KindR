@@ -98,14 +98,10 @@ export default function Profile({ nextStep, handleChange, formData }: Props) {
                   onChange={handleChange}
                   className="w-full px-5 py-4 rounded-xl bg-slate-800/50 border border-slate-700/50 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400/50 transition-all duration-300 hover:border-slate-600 appearance-none cursor-pointer"
                 >
-                  <option value="">Válassz</option>
-                  <option value="férfi">Férfi</option>
-                  <option value="nő">Nő</option>
-                  <option value="egyéb">Egyéb</option>
                   <option value="" className="bg-slate-800">Válassz</option>
-                  <option value="male" className="bg-slate-800">Férfi</option>
-                  <option value="female" className="bg-slate-800">Nő</option>
-                  <option value="other" className="bg-slate-800">Egyéb</option>
+                  <option value="férfi" className="bg-slate-800">Férfi</option>
+                  <option value="nő" className="bg-slate-800">Nő</option>
+                  <option value="egyéb" className="bg-slate-800">Egyéb</option>
                 </select>
               </div>
             </div>
