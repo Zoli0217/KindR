@@ -3,7 +3,7 @@ import SwipeCards from './Components/SwipeCards';
 import Login from "./Pages/Login";
 import Register from "./Pages/Register";
 import Profil_maker from "./Pages/Profil_maker"
-import Profil_maker from "./Pages/Profil_maker";
+
 import Chat from "./Pages/Chat";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Logout from "./Pages/Logout";
