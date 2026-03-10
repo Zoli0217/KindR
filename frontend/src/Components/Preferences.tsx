@@ -70,19 +70,19 @@ export default function Preferences({ nextStep, prevStep, handleChange, formData
                   <svg className="w-4 h-4 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                   </svg>
-                  Preferált nem
+                  Kit keresel?
                 </span>
               </label>
               <select
-                name="preferred_gender"
-                value={formData.preferred_gender}
+                name="keresett_nem"
+                value={formData.keresett_nem}
                 onChange={handleChange}
                 className="w-full px-5 py-4 rounded-xl bg-slate-800/50 border border-slate-700/50 text-white focus:outline-none focus:ring-2 focus:ring-purple-400/50 focus:border-purple-400/50 transition-all duration-300 hover:border-slate-600 appearance-none cursor-pointer"
               >
                 <option value="" className="bg-slate-800">Válassz</option>
-                <option value="male" className="bg-slate-800">Férfi</option>
-                <option value="female" className="bg-slate-800">Nő</option>
-                <option value="other" className="bg-slate-800">Mindegy</option>
+                <option value="férfi" className="bg-slate-800">Férfit</option>
+                <option value="nő" className="bg-slate-800">Nőt</option>
+                <option value="mindegy" className="bg-slate-800">Mindegy</option>
               </select>
             </div>
 
@@ -99,9 +99,9 @@ export default function Preferences({ nextStep, prevStep, handleChange, formData
                 </label>
                 <input
                   type="number"
-                  name="min_age"
+                  name="min_életkor"
                   placeholder="18"
-                  value={formData.min_age}
+                  value={formData.min_életkor}
                   onChange={handleChange}
                   className="w-full px-5 py-4 rounded-xl bg-slate-800/50 border border-slate-700/50 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-400/50 focus:border-purple-400/50 transition-all duration-300 hover:border-slate-600"
                 />
@@ -117,9 +117,9 @@ export default function Preferences({ nextStep, prevStep, handleChange, formData
                 </label>
                 <input
                   type="number"
-                  name="max_age"
+                  name="max_életkor"
                   placeholder="35"
-                  value={formData.max_age}
+                  value={formData.max_életkor}
                   onChange={handleChange}
                   className="w-full px-5 py-4 rounded-xl bg-slate-800/50 border border-slate-700/50 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-400/50 focus:border-purple-400/50 transition-all duration-300 hover:border-slate-600"
                 />

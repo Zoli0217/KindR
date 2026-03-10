@@ -6,24 +6,25 @@ interface Props {
   handleSubmit: () => Promise<void>;
 }
 
-const labelMap: Record<keyof FormData, string> = {
+const labelMap: Record<string, string> = {
   életkor: "Életkor",
   nem: "Nem",
-const labelMap: Record<string, string> = {
-  age: "Életkor",
-  gender: "Nem",
   bio: "Bemutatkozás",
   város: "Város",
-  keresett_nem: "Preferált nem",
-  min_életkor: "Min. életkor",
-  max_életkor: "Max. életkor",
-  kapcsolat_típusa: "Kapcsolat típusa",
+  preferred_gender: "Preferált nem",
+  min_age: "Min. életkor",
+  max_age: "Max. életkor",
+  relationship_type: "Kapcsolat típusa",
+  avatar_url: "Profilkép",
 };
 
 const genderLabels: Record<string, string> = {
+  férfi: "Férfi",
+  nő: "Nő",
+  egyéb: "Egyéb",
   male: "Férfi",
   female: "Nő",
-  other: "Egyéb",
+  other: "Mindegy",
 };
 
 const relationshipLabels: Record<string, string> = {
@@ -34,14 +35,14 @@ const relationshipLabels: Record<string, string> = {
 
 const formatValue = (key: string, value: string): string => {
   if (!value) return "—";
-  if (key === "gender" || key === "preferred_gender") return genderLabels[value] || value;
+  if (key === "nem" || key === "preferred_gender") return genderLabels[value] || value;
   if (key === "relationship_type") return relationshipLabels[value] || value;
-  if (key === "age" || key === "min_age" || key === "max_age") return `${value} év`;
+  if (key === "életkor" || key === "min_age" || key === "max_age") return `${value} év`;
   return value;
 };
 
 export default function Review({ prevStep, formData, handleSubmit }: Props) {
-  const displayKeys = Object.keys(formData).filter(key => key !== 'avatar_url');
+  const displayKeys = Object.keys(formData).filter(key => key !== 'avatar_url') as (keyof FormData)[];
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-950 px-6 py-12 relative overflow-hidden">
@@ -75,23 +76,36 @@ export default function Review({ prevStep, formData, handleSubmit }: Props) {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          <h2 className="text-2xl font-bold text-gray-800 mb-1 text-center">Ellenőrzés</h2>
-          <p className="text-gray-400 text-sm text-center mb-6">Nézd át az adataidat mielőtt regisztrálsz</p>
+        {/* Card */}
+        <div className="bg-slate-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-slate-800/50 p-8 md:p-10">
+          {/* Header */}
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-white">Ellenőrzés</h2>
+                <p className="text-slate-400 text-sm">Nézd át az adataidat</p>
+              </div>
+            </div>
+          </div>
 
-          <div className="space-y-3">
-            {(Object.keys(formData) as (keyof FormData)[]).map((key) => (
-              <div key={key} className="flex justify-between items-start py-2 border-b border-gray-100 last:border-0">
-                <span className="text-sm font-medium text-gray-500">{labelMap[key]}</span>
-                <span className="text-sm text-gray-800 text-right max-w-[60%] break-words">
-                  {key === "password" ? "••••••••" : formData[key] || "—"}
+          <div className="space-y-3 mb-8">
+            {displayKeys.map((key) => (
+              <div key={key} className="flex justify-between items-start py-3 px-4 rounded-xl bg-slate-800/50 border border-slate-700/50">
+                <span className="text-sm font-medium text-slate-400">{labelMap[key] || key}</span>
+                <span className="text-sm text-white text-right max-w-[60%] break-words">
+                  {formatValue(key, formData[key]?.toString() || "")}
                 </span>
               </div>
             ))}
           </div>
 
           {/* Buttons */}
-          <div className="flex gap-4">
+          <div className="flex gap-4 mt-6">
             <button
               onClick={prevStep}
               className="flex-1 py-4 bg-slate-800 text-slate-300 font-bold rounded-xl border border-slate-700 hover:bg-slate-700 hover:border-slate-600 active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2"
@@ -105,7 +119,7 @@ export default function Review({ prevStep, formData, handleSubmit }: Props) {
               onClick={handleSubmit}
               className="flex-1 py-4 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2"
             >
-              <span>Mentés</span>
+              <span>Regisztráció</span>
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
