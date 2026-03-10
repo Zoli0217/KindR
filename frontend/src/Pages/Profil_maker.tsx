@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Profile from "../components/Profile";
-import Preferences from "../components/Preferences";
-import Review from "../components/Review";
+import Profile from "../Components/Profile";
+import Preferences from "../Components/Preferences";
+import Review from "../Components/Review";
 import api from "../api/axios"
 
 export interface FormData {
